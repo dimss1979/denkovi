@@ -161,7 +161,14 @@ int main(int argc, char **argv)
             return 1;
         }
     } else {
-        fprintf(stderr, "Usage: %s <serial_port> <status|on_all|off_all|on|off> [port_number]\n", argv[0]);
+        fprintf(stderr, "Usage: %s <serial_port> <command> [command_args]\n", argv[0]);
+        fprintf(stderr, "Where command is:\n");
+        fprintf(stderr, "    status\n");
+        fprintf(stderr, "    on_all\n");
+        fprintf(stderr, "    off_all\n");
+        fprintf(stderr, "    on <port_number>\n");
+        fprintf(stderr, "    off <port_number>\n");
+        fprintf(stderr, "Where port_number is: 1..16\n");
         return 1;
     }
 
