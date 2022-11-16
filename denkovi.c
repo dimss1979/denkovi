@@ -74,7 +74,7 @@ end:
     return rv;
 }
 
-int cmd_status()
+int cmd_status(int hex)
 {
     int rv;
     char response[RESP_LEN_STATUS];
@@ -88,10 +88,14 @@ int cmd_status()
     }
 
     relay_states = ((response[0] << 8) | response[1]);
-    for (int i = 1; i <= 16; i++) {
-        relay_state = (relay_states & 0x8000) ? 1 : 0;
-        relay_states <<= 1;
-        printf("%-2i %i\n", i, relay_state);
+    if (hex) {
+        printf("0x%04x\n", relay_states);
+    } else {
+        for (int i = 1; i <= 16; i++) {
+            relay_state = (relay_states & 0x8000) ? 1 : 0;
+            relay_states <<= 1;
+            printf("%-2i %i\n", i, relay_state);
+        }
     }
 
 end:
@@ -144,7 +148,9 @@ int main(int argc, char **argv)
         serial_port = argv[1];
         cmd = argv[2];
         if (!strcmp(cmd, "status")) {
-            rv = cmd_status();
+            rv = cmd_status(0);
+        } else if (!strcmp(cmd, "status_hex")) {
+            rv = cmd_status(1);
         } else if (!strcmp(cmd, "on_all")) {
             rv = cmd_on_all();
         } else if (!strcmp(cmd, "off_all")) {
@@ -164,6 +170,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Usage: %s <serial_port> <command> [command_args]\n", argv[0]);
         fprintf(stderr, "Where command is:\n");
         fprintf(stderr, "    status\n");
+        fprintf(stderr, "    status_hex\n");
         fprintf(stderr, "    on_all\n");
         fprintf(stderr, "    off_all\n");
         fprintf(stderr, "    on <port_number>\n");
