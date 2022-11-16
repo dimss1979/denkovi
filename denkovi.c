@@ -9,10 +9,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define RESP_LEN_ASK    2
-#define RESP_LEN_ON     4
-#define RESP_LEN_OFF    5
-#define RESP_LEN_SET    5
+#define RESP_LEN_STATUS           2
+#define RESP_LEN_ON_ALL           4
+#define RESP_LEN_OFF_ALL          5
+#define RESP_LEN_ON_OFF_SINGLE    5
 
 char *serial_port = NULL;
 
@@ -74,10 +74,10 @@ end:
     return rv;
 }
 
-int cmd_ask()
+int cmd_status()
 {
     int rv;
-    char response[RESP_LEN_ASK];
+    char response[RESP_LEN_STATUS];
     char *command = "ask//";
     uint16_t relay_states;
     int relay_state;
@@ -99,10 +99,10 @@ end:
     return rv;
 }
 
-int cmd_on()
+int cmd_on_all()
 {
     int rv;
-    char response[RESP_LEN_ON];
+    char response[RESP_LEN_ON_ALL];
     char *command = "on//";
 
     rv = send_and_receive(command, response, sizeof(response));
@@ -110,10 +110,10 @@ int cmd_on()
     return rv;
 }
 
-int cmd_off()
+int cmd_off_all()
 {
     int rv;
-    char response[RESP_LEN_OFF];
+    char response[RESP_LEN_OFF_ALL];
     char *command = "off//";
 
     rv = send_and_receive(command, response, sizeof(response));
@@ -121,11 +121,11 @@ int cmd_off()
     return rv;
 }
 
-int cmd_set(int on, int port_number)
+int cmd_on_off_single(int on, int port_number)
 {
     int rv;
-    char response[RESP_LEN_SET];
-    char command[RESP_LEN_SET + 1];
+    char response[RESP_LEN_ON_OFF_SINGLE];
+    char command[RESP_LEN_ON_OFF_SINGLE + 1];
 
     snprintf(command, sizeof(command), "%02u%c//", (unsigned int) port_number, on ? '+' : '-');
 
@@ -144,18 +144,18 @@ int main(int argc, char **argv)
         serial_port = argv[1];
         cmd = argv[2];
         if (!strcmp(cmd, "status")) {
-            rv = cmd_ask();
+            rv = cmd_status();
         } else if (!strcmp(cmd, "on_all")) {
-            rv = cmd_on();
+            rv = cmd_on_all();
         } else if (!strcmp(cmd, "off_all")) {
-            rv = cmd_off();
+            rv = cmd_off_all();
         } else if (!strcmp(cmd, "on") || !strcmp(cmd, "off")) {
             if (argc < 4) {
                 fprintf(stderr, "No port number specified\n");
                 return 1;
             }
             port_number = atoi(argv[3]);
-            rv = cmd_set(!strcmp(cmd, "on"), port_number);
+            rv = cmd_on_off_single(!strcmp(cmd, "on"), port_number);
         } else {
             fprintf(stderr, "Unknown command\n");
             return 1;
