@@ -133,6 +133,7 @@ int cmd_on_off_single(int on, int port_number)
     char command[RESP_LEN_ON_OFF_SINGLE + 1];
 
     snprintf(command, sizeof(command), "%02u%c//", (unsigned int) port_number, on ? '+' : '-');
+    command[sizeof(command) - 1] = 0;
 
     rv = send_and_receive(command, response, sizeof(response));
 
