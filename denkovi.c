@@ -13,6 +13,7 @@
 #define RESP_LEN_ON_ALL           4
 #define RESP_LEN_OFF_ALL          5
 #define RESP_LEN_ON_OFF_SINGLE    5
+#define RESP_LEN_SET              5
 
 char *serial_port = NULL;
 
@@ -138,6 +139,26 @@ int cmd_on_off_single(int on, int port_number)
     return rv;
 }
 
+int cmd_set(unsigned int port_bitmask)
+{
+    int rv;
+    char response[RESP_LEN_SET];
+    unsigned char command[RESP_LEN_SET + 1];
+
+    printf("bitmask: %04x\n", port_bitmask);
+    command[0] = 'x';
+    command[1] = (port_bitmask >> 8) & 0xff;
+    command[2] = port_bitmask & 0xff;
+    command[3] = '/';
+    command[4] = '/';
+    command[5] = '\0';
+    printf("command %02x %02x\n", command[1], command[2]);
+
+    rv = send_and_receive((char*) command, response, sizeof(response));
+
+    return rv;
+}
+
 int main(int argc, char **argv)
 {
     char *cmd;
@@ -162,6 +183,13 @@ int main(int argc, char **argv)
             }
             port_number = atoi(argv[3]);
             rv = cmd_on_off_single(!strcmp(cmd, "on"), port_number);
+        } else if (!strcmp(cmd, "set")) {
+            if (argc < 4) {
+                fprintf(stderr, "No port bitmask specified\n");
+                return 1;
+            }
+            unsigned int port_bitmask = strtol(argv[3], NULL, 0);
+            rv = cmd_set(port_bitmask);
         } else {
             fprintf(stderr, "Unknown command\n");
             return 1;
