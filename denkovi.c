@@ -126,13 +126,13 @@ int cmd_off_all()
     return rv;
 }
 
-int cmd_on_off_single(int on, int port_number)
+int cmd_on_off_single(int on, int relay_number)
 {
     int rv;
     char response[RESP_LEN_ON_OFF_SINGLE];
     char command[RESP_LEN_ON_OFF_SINGLE + 1];
 
-    snprintf(command, sizeof(command), "%02u%c//", (unsigned int) port_number, on ? '+' : '-');
+    snprintf(command, sizeof(command), "%02u%c//", (unsigned int) relay_number, on ? '+' : '-');
     command[sizeof(command) - 1] = 0;
 
     rv = send_and_receive(command, response, sizeof(response));
@@ -140,16 +140,16 @@ int cmd_on_off_single(int on, int port_number)
     return rv;
 }
 
-int cmd_set(unsigned int port_bitmap)
+int cmd_set(unsigned int relay_bitmap)
 {
     int rv;
     char response[RESP_LEN_SET];
     unsigned char command[RESP_LEN_SET + 1];
 
-    printf("bitmap: %04x\n", port_bitmap);
+    printf("bitmap: %04x\n", relay_bitmap);
     command[0] = 'x';
-    command[1] = (port_bitmap >> 8) & 0xff;
-    command[2] = port_bitmap & 0xff;
+    command[1] = (relay_bitmap >> 8) & 0xff;
+    command[2] = relay_bitmap & 0xff;
     command[3] = '/';
     command[4] = '/';
     command[5] = '\0';
@@ -164,7 +164,7 @@ int main(int argc, char **argv)
 {
     char *cmd;
     int rv = 0;
-    int port_number;
+    int relay_number;
 
     if (argc > 2) {
         serial_port = argv[1];
@@ -179,18 +179,18 @@ int main(int argc, char **argv)
             rv = cmd_off_all();
         } else if (!strcmp(cmd, "on") || !strcmp(cmd, "off")) {
             if (argc < 4) {
-                fprintf(stderr, "No port number specified\n");
+                fprintf(stderr, "No relay number specified\n");
                 return 1;
             }
-            port_number = atoi(argv[3]);
-            rv = cmd_on_off_single(!strcmp(cmd, "on"), port_number);
+            relay_number = atoi(argv[3]);
+            rv = cmd_on_off_single(!strcmp(cmd, "on"), relay_number);
         } else if (!strcmp(cmd, "set")) {
             if (argc < 4) {
-                fprintf(stderr, "No port bitmap specified\n");
+                fprintf(stderr, "No relay bitmap specified\n");
                 return 1;
             }
-            unsigned int port_bitmap = strtol(argv[3], NULL, 0);
-            rv = cmd_set(port_bitmap);
+            unsigned int relay_bitmap = strtol(argv[3], NULL, 0);
+            rv = cmd_set(relay_bitmap);
         } else {
             fprintf(stderr, "Unknown command\n");
             return 1;
@@ -202,9 +202,9 @@ int main(int argc, char **argv)
         fprintf(stderr, "    status_hex\n");
         fprintf(stderr, "    on_all\n");
         fprintf(stderr, "    off_all\n");
-        fprintf(stderr, "    on <port_number>\n");
-        fprintf(stderr, "    off <port_number>\n");
-        fprintf(stderr, "Where port_number is: 1..16\n");
+        fprintf(stderr, "    on <relay_number>\n");
+        fprintf(stderr, "    off <relay_number>\n");
+        fprintf(stderr, "Where relay_number is: 1..16\n");
         return 1;
     }
 
