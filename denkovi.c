@@ -204,7 +204,9 @@ int main(int argc, char **argv)
         fprintf(stderr, "    off_all\n");
         fprintf(stderr, "    on <relay_number>\n");
         fprintf(stderr, "    off <relay_number>\n");
+        fprintf(stderr, "    set <relay_bitmap>\n");
         fprintf(stderr, "Where relay_number is: 1..16\n");
+        fprintf(stderr, "      relay_bitmap is: 16-bit unsigned integer - MSB for relay 1, LSB for relay 16\n");
         return 1;
     }
 
