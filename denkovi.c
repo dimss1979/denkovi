@@ -140,16 +140,16 @@ int cmd_on_off_single(int on, int port_number)
     return rv;
 }
 
-int cmd_set(unsigned int port_bitmask)
+int cmd_set(unsigned int port_bitmap)
 {
     int rv;
     char response[RESP_LEN_SET];
     unsigned char command[RESP_LEN_SET + 1];
 
-    printf("bitmask: %04x\n", port_bitmask);
+    printf("bitmap: %04x\n", port_bitmap);
     command[0] = 'x';
-    command[1] = (port_bitmask >> 8) & 0xff;
-    command[2] = port_bitmask & 0xff;
+    command[1] = (port_bitmap >> 8) & 0xff;
+    command[2] = port_bitmap & 0xff;
     command[3] = '/';
     command[4] = '/';
     command[5] = '\0';
@@ -186,11 +186,11 @@ int main(int argc, char **argv)
             rv = cmd_on_off_single(!strcmp(cmd, "on"), port_number);
         } else if (!strcmp(cmd, "set")) {
             if (argc < 4) {
-                fprintf(stderr, "No port bitmask specified\n");
+                fprintf(stderr, "No port bitmap specified\n");
                 return 1;
             }
-            unsigned int port_bitmask = strtol(argv[3], NULL, 0);
-            rv = cmd_set(port_bitmask);
+            unsigned int port_bitmap = strtol(argv[3], NULL, 0);
+            rv = cmd_set(port_bitmap);
         } else {
             fprintf(stderr, "Unknown command\n");
             return 1;
