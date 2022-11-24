@@ -60,10 +60,6 @@ dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DA
 dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 on 9
 dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
 0x8880
-dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 off1 9
-Unknown command
-dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
-0x8880
 dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 set 0xabcd
 dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
 0xabcd
@@ -84,6 +80,9 @@ dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DA
 14 1
 15 0
 16 1
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 off 1
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
+0x2bcd
 dimss@domik:~/p/denkovi$
 ```
 
