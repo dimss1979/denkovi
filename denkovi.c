@@ -26,7 +26,7 @@
 
 char *serial_port = NULL;
 
-int send_and_receive(char *command, int command_len, char *response, int response_len)
+int send_and_receive(unsigned char *command, int command_len, unsigned char *response, int response_len)
 {
     int fd;
     int rv = 0;
@@ -87,8 +87,8 @@ end:
 int cmd_status(int hex)
 {
     int rv;
-    char response[RESP_LEN_STATUS];
-    char command[CMD_LEN_STATUS] = { 'a', 's', 'k', '/', '/' };
+    unsigned char response[RESP_LEN_STATUS];
+    unsigned char command[CMD_LEN_STATUS] = { 'a', 's', 'k', '/', '/' };
     uint16_t relay_states;
     int relay_state;
 
@@ -116,8 +116,8 @@ end:
 int cmd_on_all()
 {
     int rv;
-    char response[RESP_LEN_ON_ALL];
-    char command[CMD_LEN_ON_ALL] = { 'o', 'n', '/', '/' };
+    unsigned char response[RESP_LEN_ON_ALL];
+    unsigned char command[CMD_LEN_ON_ALL] = { 'o', 'n', '/', '/' };
 
     rv = send_and_receive(command, sizeof(command), response, sizeof(response));
 
@@ -127,8 +127,8 @@ int cmd_on_all()
 int cmd_off_all()
 {
     int rv;
-    char response[RESP_LEN_OFF_ALL];
-    char command[CMD_LEN_OFF_ALL] = { 'o', 'f', 'f', '/', '/' };
+    unsigned char response[RESP_LEN_OFF_ALL];
+    unsigned char command[CMD_LEN_OFF_ALL] = { 'o', 'f', 'f', '/', '/' };
 
     rv = send_and_receive(command, sizeof(command), response, sizeof(response));
 
@@ -138,10 +138,10 @@ int cmd_off_all()
 int cmd_on_off_single(int on, int relay_number)
 {
     int rv;
-    char response[RESP_LEN_ON_OFF_SINGLE];
-    char command[CMD_LEN_ON_OFF_SINGLE + 1];
+    unsigned char response[RESP_LEN_ON_OFF_SINGLE];
+    unsigned char command[CMD_LEN_ON_OFF_SINGLE + 1];
 
-    snprintf(command, sizeof(command), "%02u%c//", (unsigned int) relay_number, on ? '+' : '-');
+    snprintf((char *) command, sizeof(command), "%02u%c//", (unsigned int) relay_number, on ? '+' : '-');
 
     rv = send_and_receive(command, CMD_LEN_ON_OFF_SINGLE, response, sizeof(response));
 
@@ -151,7 +151,7 @@ int cmd_on_off_single(int on, int relay_number)
 int cmd_set(unsigned int relay_bitmap)
 {
     int rv;
-    char response[RESP_LEN_SET];
+    unsigned char response[RESP_LEN_SET];
     unsigned char command[CMD_LEN_SET];
 
     command[0] = 'x';
@@ -160,7 +160,7 @@ int cmd_set(unsigned int relay_bitmap)
     command[3] = '/';
     command[4] = '/';
 
-    rv = send_and_receive((char*) command, sizeof(command), response, sizeof(response));
+    rv = send_and_receive(command, sizeof(command), response, sizeof(response));
 
     return rv;
 }
