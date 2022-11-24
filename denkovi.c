@@ -169,7 +169,6 @@ int main(int argc, char **argv)
 {
     char *cmd;
     int rv = 0;
-    int relay_number;
 
     if (argc > 2) {
         serial_port = argv[1];
@@ -187,7 +186,11 @@ int main(int argc, char **argv)
                 fprintf(stderr, "No relay number specified\n");
                 return 1;
             }
-            relay_number = atoi(argv[3]);
+            unsigned int relay_number = strtol(argv[3], NULL, 0);
+            if (relay_number < 1 || relay_number > 16) {
+                fprintf(stderr, "Invalid relay number\n");
+                return 1;
+            }
             rv = cmd_on_off_single(!strcmp(cmd, "on"), relay_number);
         } else if (!strcmp(cmd, "set")) {
             if (argc < 4) {
@@ -195,6 +198,10 @@ int main(int argc, char **argv)
                 return 1;
             }
             unsigned int relay_bitmap = strtol(argv[3], NULL, 0);
+            if (relay_bitmap > 0xffff) {
+                fprintf(stderr, "Invalid relay bitmap\n");
+                return 1;
+            }
             rv = cmd_set(relay_bitmap);
         } else {
             fprintf(stderr, "Unknown command\n");
