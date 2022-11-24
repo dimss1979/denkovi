@@ -10,14 +10,23 @@
 #include <stdlib.h>
 
 #define RESP_LEN_STATUS           2
+#define  CMD_LEN_STATUS           5
+
 #define RESP_LEN_ON_ALL           4
+#define  CMD_LEN_ON_ALL           RESP_LEN_ON_ALL
+
 #define RESP_LEN_OFF_ALL          5
+#define  CMD_LEN_OFF_ALL          RESP_LEN_OFF_ALL
+
 #define RESP_LEN_ON_OFF_SINGLE    5
+#define  CMD_LEN_ON_OFF_SINGLE    RESP_LEN_ON_OFF_SINGLE
+
 #define RESP_LEN_SET              5
+#define  CMD_LEN_SET              RESP_LEN_SET
 
 char *serial_port = NULL;
 
-int send_and_receive(char *command, char *response, int response_len)
+int send_and_receive(char *command, int command_len, char *response, int response_len)
 {
     int fd;
     int rv = 0;
@@ -57,7 +66,7 @@ int send_and_receive(char *command, char *response, int response_len)
         tcflush(fd, TCIFLUSH);
     }
 
-    write(fd, command, strlen(command));
+    write(fd, command, command_len);
     usleep(100 * 1000);
     bytes_read = read(fd, response, response_len);
 
@@ -79,11 +88,11 @@ int cmd_status(int hex)
 {
     int rv;
     char response[RESP_LEN_STATUS];
-    char *command = "ask//";
+    char command[CMD_LEN_STATUS] = { 'a', 's', 'k', '/', '/' };
     uint16_t relay_states;
     int relay_state;
 
-    rv = send_and_receive(command, response, sizeof(response));
+    rv = send_and_receive(command, sizeof(command), response, sizeof(response));
     if (rv) {
         goto end;
     }
@@ -108,9 +117,9 @@ int cmd_on_all()
 {
     int rv;
     char response[RESP_LEN_ON_ALL];
-    char *command = "on//";
+    char command[CMD_LEN_ON_ALL] = { 'o', 'n', '/', '/' };
 
-    rv = send_and_receive(command, response, sizeof(response));
+    rv = send_and_receive(command, sizeof(command), response, sizeof(response));
 
     return rv;
 }
@@ -119,9 +128,9 @@ int cmd_off_all()
 {
     int rv;
     char response[RESP_LEN_OFF_ALL];
-    char *command = "off//";
+    char command[CMD_LEN_OFF_ALL] = { 'o', 'f', 'f', '/', '/' };
 
-    rv = send_and_receive(command, response, sizeof(response));
+    rv = send_and_receive(command, sizeof(command), response, sizeof(response));
 
     return rv;
 }
@@ -130,12 +139,11 @@ int cmd_on_off_single(int on, int relay_number)
 {
     int rv;
     char response[RESP_LEN_ON_OFF_SINGLE];
-    char command[RESP_LEN_ON_OFF_SINGLE + 1];
+    char command[CMD_LEN_ON_OFF_SINGLE + 1];
 
     snprintf(command, sizeof(command), "%02u%c//", (unsigned int) relay_number, on ? '+' : '-');
-    command[sizeof(command) - 1] = 0;
 
-    rv = send_and_receive(command, response, sizeof(response));
+    rv = send_and_receive(command, CMD_LEN_ON_OFF_SINGLE, response, sizeof(response));
 
     return rv;
 }
@@ -144,18 +152,15 @@ int cmd_set(unsigned int relay_bitmap)
 {
     int rv;
     char response[RESP_LEN_SET];
-    unsigned char command[RESP_LEN_SET + 1];
+    unsigned char command[CMD_LEN_SET];
 
-    printf("bitmap: %04x\n", relay_bitmap);
     command[0] = 'x';
     command[1] = (relay_bitmap >> 8) & 0xff;
     command[2] = relay_bitmap & 0xff;
     command[3] = '/';
     command[4] = '/';
-    command[5] = '\0';
-    printf("command %02x %02x\n", command[1], command[2]);
 
-    rv = send_and_receive((char*) command, response, sizeof(response));
+    rv = send_and_receive((char*) command, sizeof(command), response, sizeof(response));
 
     return rv;
 }
