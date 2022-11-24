@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <sys/file.h>
 
 #define RESP_LEN_STATUS           2
 #define  CMD_LEN_STATUS           5
@@ -169,6 +170,18 @@ int main(int argc, char **argv)
 {
     char *cmd;
     int rv = 0;
+    int lock_fd;
+
+    lock_fd = open("/tmp/denkovi.lock", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if (lock_fd < 0) {
+        fprintf(stderr, "Cannot open lock file\n");
+        return 1;
+    }
+    rv = flock(lock_fd, LOCK_EX);
+    if (rv) {
+        fprintf(stderr, "Cannot lock file\n");
+        return 1;
+    }
 
     if (argc > 2) {
         serial_port = argv[1];
