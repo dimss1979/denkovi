@@ -64,36 +64,3 @@ In our case, board serial number is "DAE004XC":
 ```
 
 You better use these if available in your system.
-
-## Known issues
-
-1. When relay 9 is on, the status of relays 1-8 is always reported as on (on-board green LEDs are correct at the same time).
-
-Example:
-
-```
-set 0x0101 - board reports 0x0101 (pass)
-set 0x0181 - board reports 0xff81 (fail)
-```
-
-2. When using "set" command, at least one relay in each bitmap octet must be turned on (at least one bit in each byte must be one). If at least one of two bytes representing relays 1-8 and 9-16 respectively is zero, the command fails.
-
-Example:
-
-```
-0x0000 - fail
-0x0001 - fail
-0x8000 - fail
-0xff00 - fail
-0x8001 - pass
-0x8002 - pass
-0x0102 - pass
-0x80ff - pass
-```
-
-This behavior is not mentioned in the documentation.
-It looks like a board firmware or hardware issue.
-However, it is still possible to use the board with these limitations:
-
-1. Don't rely on "status" of relays 1-8, or don't use relay 9
-2. Don't use "set" command unless you are sure there will always be at least one relay on in each group 1-8 and 9-16 respectively. Use commands "on", "off", "on_all", "off_all" instead.
