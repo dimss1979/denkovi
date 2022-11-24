@@ -26,23 +26,71 @@ Or write a Makefile if you wish.
 ## Run
 
 ```
-dimss@domik:~/p/denkovi$ ./denkovi 
-Usage: ./denkovi <serial_port> <command> [command_args]
-Where command is:
-    status
-    status_hex
-    on_all
-    off_all
-    on <relay_number>
-    off <relay_number>
-    set <relay_bitmap>
-Where relay_number is: 1..16
-      relay_bitmap is: 16-bit unsigned integer - MSB for relay 1, LSB for relay 16
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status
+1  0
+2  0
+3  0
+4  0
+5  0
+6  0
+7  0
+8  0
+9  0
+10 0
+11 0
+12 0
+13 0
+14 0
+15 0
+16 0
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
+0x0000
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 on_all
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
+0xffff
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 off_all
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
+0x0000
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 on 1
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
+0x8000
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 on 5
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
+0x8800
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 on 9
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
+0x8880
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 off1 9
+Unknown command
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
+0x8880
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 set 0xabcd
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status_hex
+0xabcd
+dimss@domik:~/p/denkovi$ ./denkovi /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_DAE004XC-if00-port0 status
+1  1
+2  0
+3  1
+4  0
+5  1
+6  0
+7  1
+8  1
+9  1
+10 1
+11 0
+12 0
+13 1
+14 1
+15 0
+16 1
 dimss@domik:~/p/denkovi$
 ```
 
 Make sure serial port is accessible.
 In Debian, the user must be a member of "dialout" group.
+
+The tool creates lock file `/tmp/denkovi.lock`.
 
 ## Serial port naming
 
