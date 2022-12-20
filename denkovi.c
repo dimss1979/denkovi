@@ -58,6 +58,7 @@ int send_and_receive(unsigned char *command, int command_len, unsigned char *res
         t.c_cflag &= ~(PARENB | PARODD);
         t.c_cflag &= ~CSTOPB;
         t.c_cflag &= ~CRTSCTS;
+        t.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);
 
         if (tcsetattr(fd, TCSANOW, &t) != 0) {
             fprintf(stderr, "Cannot set serial port attributes\n");
